@@ -73,7 +73,7 @@ mdtex[in___]:=mywritefileend["\n$$\n"<>ToString@TeXForm[in]<>"\n$$\n"];
 
 
 (* Load MathJax *)
-mdtex[]:=mywritefileend2@"\n<script src=\"https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript\"></script>\n"
+mdtex[]:=mywritefileend2@"\n<script src=\"https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML\" type=\"text/javascript\"></script>\n"
 
 mdshow[in___] := (
   If[
@@ -153,7 +153,8 @@ common commands:
 \tmdhelp[]\toutput help
 \tsendtolocal[to_,text_,file_]\tfile transfer
 \tmdprint[in_,in2_,...]\toutput string in mdmma
-\tmdshow[in]\tSimilar to mdprint, it supports graphics"];
+\tmdshow[in]\tSimilar to mdprint, it supports graphics
+\tmdtex[]\tUse MathJax to display latex expressions"];
 
 (* ::Subsection:: *)
 (* initialization *)
