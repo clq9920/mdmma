@@ -1,52 +1,65 @@
 BeginPackage["mdmma`"]
 
-mdclear::usage="清理markdown文件,格式:mdclear[]";
-mdhelp::usage="调出简介,格式:mdhelp[]";
-mdprint::usage="在mdmma中输出字符串,格式:mdprint[in_,in2_,...]";
-mdshow::usage="相对于myprint,支持图形,格式:mdshow[in_]";
-mdnew::usage="新建一个markdown笔记本,格式mdnew[],mdnew[name_String]";
+(* ::Subsection:: *)
+(* Function declaration *)
+
+mdclear::usage="Clean up markdown file,format:mdclear[]";
+mdhelp::usage="A brief introduction,format:mdhelp[]";
+mdprint::usage="Output the original string at the end of the markdown file,format:mdprint[in_,in2_,...]";
+mdshow::usage="More powerful than mdprint and supports graphics,format:mdshow[in_]";
+mdnew::usage="Create a new markdown notebook,format:mdnew[],mdnew[name_String]";
 Begin["`Private`"]
 
-
+(* ::Subsection:: *)
+(* Configuration parameter *)
 notebookfiler="mdmma";
 outputfile="NOTEBOOK_OUT_PUT.md";
 
 
+(* ::Subsection:: *)
+(* Resource control *)
 
 mmashown=0;
 getsn[]:=++mmashown
-(* 输出资源标号 *)
 
 
-(* markdown格式化 *)
+(* ::Subsection:: *)
+(* markdown style *)
+
 mdTemplate=<|
-"outfrom"->StringTemplate["\n\n Out[`1`]=`2`\n"],
-"image"->StringTemplate["\n\n ![](./resfolder/``-``.``)"]
-|>
-
+"outformat"->Function["\n\nOut[`"<>ToString[#1]<>"`]="<>ToString[#2]<>"\n"],
+"image"->StringTemplate["\n\n![](./resfolder/``-``.``)"]
+|>;
 
 myshort[in_] := 
  Cases[in // Short // ToBoxes, _String, {0, Infinity}] // StringJoin
  
 
+(* ::Subsection:: *)
+(* Basic document control *)
+
+(* ::Subsubsection:: *)
+(* outformat *)
+
 mywritefileend[in_]:=(
 outputfilestream=OpenAppend[FileNameJoin[{notebookfiler,outputfile}]];
 WriteString[outputfilestream,
-mdTemplate["outfrom"][$Line,in]
+mdTemplate["outformat"][$Line,in]
 ];
 Close[outputfilestream];
 );
 
-(* out[n]=形式附加 *)
-
-
+(* ::Subsubsection:: *)
+(* Original format *)
 mywritefileend2[in_]:=(
 outputfilestream=OpenAppend[FileNameJoin[{notebookfiler,outputfile}]];
 WriteString[outputfilestream,in];
 Close[outputfilestream];
 );
 
-(* string形式附加 *)
+
+(* ::Subsection:: *)
+(* Mdnotebook output encapsulation *)
 
 mdprint[in___]:=mywritefileend2["\n\n"<>StringJoin[ToString/@{in}]]
 
@@ -54,8 +67,8 @@ mdshow[in___] := (
   If[
     Length[{in}]==1,
     Switch[in,
-      _Graphics, Export[FileNameJoin[{notebookfiler,"resfolder",ToString[$Line]<>"-"<>ToString[getsn[]]<>".png"}] , in];
-      mdTemplate["image"][$Line,mmashown,"png"]//mywritefileend,
+      _Graphics, Export[FileNameJoin[{notebookfiler,"resfolder",ToString[$Line]<>"-"<>ToString[getsn[]]<>".svg"}] , in];
+      mdTemplate["image"][$Line,mmashown,"svg"]//mywritefileend,
       _Graphics3D, Export[FileNameJoin[{notebookfiler,"resfolder",ToString[$Line]<>"-"<>ToString[getsn[]]<>".png"}] , in];mdTemplate["image"][$Line,mmashown,"png"] //mywritefileend,
       _?(#===Null&),Null,
       _, If[ByteCount[in] > 100, myshort[in], ToString@in]//mywritefileend
@@ -73,45 +86,33 @@ mdshow[in___] := (
 
 
 
+(* ::Subsection:: *)
+(* File transfer tool *)
 
-maillist=<|"clq"->"clq9921@163.com"|>;
+maillist=<|"xxx"->"xxxx@xx.com"|>;
 
 
 sendtolocal[to_,text_,file_]:=Print@SendMail[<|
     Echo["To" -> to], 
     Echo["Subject" -> text], 
     "Body" ->"", 
-    "From" -> "clq9920@163.com", 
+    "From" -> "xxx@163.com", 
     "Server" -> "smtp.163.com", 
-    "UserName" -> "clq9920@163.com", 
-    "Password" -> "password"
-    ,"AttachedFiles" -> file
+    "UserName" -> "xxx@163.com", 
+    "Password" -> "password",
+    "AttachedFiles" -> file
     |>];
 
 
+(* ::Subsection:: *)
+(* Document management tool *)
 
 mdclear[]:=Function[
   WriteString[#filename,"\n\n # NOTEBOOK OUT PUT"];
   Close[#filename];
 ]@<|"filename"->FileNameJoin[{notebookfiler,outputfile}]|>;
 
-mdhelp[]:=Print["mdmma,by xxx and xxx
-信息:
-\t文件目录:"<>FileNameJoin[{notebookfiler,outputfile}]<>"
-\t资源目录:resfolder
-\tmaillist:"<>ToString[maillist]<>"
-常用命令:
-\tmdClear[]\t清理输出笔记本
-\t$Post =.\t暂时关闭mdmma输出
-\t$Post = mdshow\t恢复mdmma输出
-\tmdhelp[]\t输出帮助
-\tsendtolocal[to_,text_,file_]\t文件传输
-\tmdprint[in_,in2_,...]\t在mdmma中输出字符串
-\tmdshow[in]\t相对于myprint,支持图形"];
 
-
-(* init[] *)
-$Post = mdshow;
 mdnew[name_:notebookfiler]:=(
   notebookfiler=name;
   If[DirectoryQ[notebookfiler],Null,CreateDirectory[notebookfiler]];
@@ -124,9 +125,28 @@ mdnew[name_:notebookfiler]:=(
   mywritefileend2["\n\n # NOTEBOOK OUT PUT"];
   $Post=mdshow;
   )
-(* mywritefileend2["\n\n # NOTEBOOK OUT PUT"]; *)
 
-mdhelp[]
+
+(* ::Subsection:: *)
+(* Help *)
+mdhelp[]:=Print["mdmma,by xxx and xxx
+information:
+\tnotebook file:"<>FileNameJoin[{notebookfiler,outputfile}]<>"
+\tresource directory:resfolder
+\tmaillist:"<>ToString[maillist]<>"
+common commands:
+\tmdClear[]\tclear notebook
+\t$Post =.\ttemporarily turn off mdmma output
+\t$Post = mdshow\tturn on mdmma output
+\tmdhelp[]\toutput help
+\tsendtolocal[to_,text_,file_]\tfile transfer
+\tmdprint[in_,in2_,...]\toutput string in mdmma
+\tmdshow[in]\tSimilar to mdprint, it supports graphics"];
+
+(* ::Subsection:: *)
+(* initialization *)
+$Post = mdshow;
+mdhelp[];
 
 
 
