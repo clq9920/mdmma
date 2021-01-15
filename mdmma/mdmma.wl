@@ -27,8 +27,8 @@ getsn[]:=++mmashown
 (* markdown style *)
 
 mdTemplate=<|
-"outformat"->StringTemplate["\n\n Out[`1`]=`2`\n"],
-"image"->StringTemplate["\n\n ![](./resfolder/``-``.``)"]
+"outformat"->Function["\n\nOut[`"<>ToString[#1]<>"`]="<>ToString[#2]<>"\n"],
+"image"->StringTemplate["\n\n![](./resfolder/``-``.``)"]
 |>;
 
 myshort[in_] := 
@@ -67,8 +67,8 @@ mdshow[in___] := (
   If[
     Length[{in}]==1,
     Switch[in,
-      _Graphics, Export[FileNameJoin[{notebookfiler,"resfolder",ToString[$Line]<>"-"<>ToString[getsn[]]<>".png"}] , in];
-      mdTemplate["image"][$Line,mmashown,"png"]//mywritefileend,
+      _Graphics, Export[FileNameJoin[{notebookfiler,"resfolder",ToString[$Line]<>"-"<>ToString[getsn[]]<>".svg"}] , in];
+      mdTemplate["image"][$Line,mmashown,"svg"]//mywritefileend,
       _Graphics3D, Export[FileNameJoin[{notebookfiler,"resfolder",ToString[$Line]<>"-"<>ToString[getsn[]]<>".png"}] , in];mdTemplate["image"][$Line,mmashown,"png"] //mywritefileend,
       _?(#===Null&),Null,
       _, If[ByteCount[in] > 100, myshort[in], ToString@in]//mywritefileend
@@ -96,11 +96,11 @@ sendtolocal[to_,text_,file_]:=Print@SendMail[<|
     Echo["To" -> to], 
     Echo["Subject" -> text], 
     "Body" ->"", 
-    "From" -> "clq9920@163.com", 
+    "From" -> "xxx@163.com", 
     "Server" -> "smtp.163.com", 
-    "UserName" -> "clq9920@163.com", 
-    "Password" -> "password"
-    ,"AttachedFiles" -> file
+    "UserName" -> "xxx@163.com", 
+    "Password" -> "password",
+    "AttachedFiles" -> file
     |>];
 
 
