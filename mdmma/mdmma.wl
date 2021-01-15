@@ -8,6 +8,7 @@ mdhelp::usage="A brief introduction,format:mdhelp[]";
 mdprint::usage="Output the original string at the end of the markdown file,format:mdprint[in_,in2_,...]";
 mdshow::usage="More powerful than mdprint and supports graphics,format:mdshow[in_]";
 mdnew::usage="Create a new markdown notebook,format:mdnew[],mdnew[name_String]";
+mdtex::usage="Use MathJax to display latex expressions,format:use mdtex[] load MathJax,use mdtex[in___] show result";
 Begin["`Private`"]
 
 (* ::Subsection:: *)
@@ -61,7 +62,18 @@ Close[outputfilestream];
 (* ::Subsection:: *)
 (* Mdnotebook output encapsulation *)
 
-mdprint[in___]:=mywritefileend2["\n\n"<>StringJoin[ToString/@{in}]]
+(* markdown中的特殊字符替换 *)
+mdstringreplace={"`"->"\\`"};
+
+mdprint[in___]:=(mywritefileend2["\n\n"<>StringJoin[StringReplace[mdstringreplace][ToString/@{in}]]])
+
+
+(* export lex *)
+mdtex[in___]:=mywritefileend["\n$$\n"<>ToString@TeXForm[in]<>"\n$$\n"];
+
+
+(* Load MathJax *)
+mdtex[]:=mywritefileend2@"\n<script src=\"https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript\"></script>\n"
 
 mdshow[in___] := (
   If[
@@ -71,10 +83,10 @@ mdshow[in___] := (
       mdTemplate["image"][$Line,mmashown,"svg"]//mywritefileend,
       _Graphics3D, Export[FileNameJoin[{notebookfiler,"resfolder",ToString[$Line]<>"-"<>ToString[getsn[]]<>".png"}] , in];mdTemplate["image"][$Line,mmashown,"png"] //mywritefileend,
       _?(#===Null&),Null,
-      _, If[ByteCount[in] > 100, myshort[in], ToString@in]//mywritefileend
+      _, StringReplace[mdstringreplace]@If[ByteCount[in] > 100, myshort[in], ToString@in]//mywritefileend
     ];
     ,
-    If[
+    StringReplace[mdstringreplace]@If[
       ByteCount[{in}] > 100, 
       myshort[Hold[in]], 
       ToString@Hold[in]
