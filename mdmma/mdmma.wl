@@ -9,6 +9,9 @@ mdprint::usage="Output the original string at the end of the markdown file,forma
 mdshow::usage="More powerful than mdprint and supports graphics,format:mdshow[in_]";
 mdnew::usage="Create a new markdown notebook,format:mdnew[],mdnew[name_String]";
 mdtex::usage="Use MathJax to display latex expressions,format:use mdtex[] load MathJax,use mdtex[in___] show result";
+maillist::usage="maillist";
+sendtolocal::usage="send a mail to someone,format:sendtolocal[to_String,text_String,file_File]";
+
 Begin["`Private`"]
 
 (* ::Subsection:: *)
