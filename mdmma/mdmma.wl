@@ -85,6 +85,7 @@ mdshow[in___] := (
       _Graphics, Export[FileNameJoin[{notebookfiler,"resfolder",ToString[$Line]<>"-"<>ToString[getsn[]]<>".svg"}] , in];
       mdTemplate["image"][$Line,mmashown,"svg"]//mywritefileend,
       _Graphics3D, Export[FileNameJoin[{notebookfiler,"resfolder",ToString[$Line]<>"-"<>ToString[getsn[]]<>".png"}] , in];mdTemplate["image"][$Line,mmashown,"png"] //mywritefileend,
+      _LibraryFunction,StringReplace[mdstringreplace][ToString[in]]//mywritefileend,
       _?(#===Null&),Null,
       _, StringReplace[mdstringreplace]@If[ByteCount[in] > 100, myshort[in], ToString@in]//mywritefileend
     ];
