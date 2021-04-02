@@ -1,5 +1,6 @@
 BeginPackage["mdmma`"]
 
+
 (* ::Subsection:: *)
 (* Function declaration *)
 
@@ -66,7 +67,7 @@ Close[outputfilestream];
 (* Mdnotebook output encapsulation *)
 
 (* markdown中的特殊字符替换 *)
-mdstringreplace={"`"->"\\`"};
+mdstringreplace={"`"->"\\`","*"->"\\*","$"->"\\$","_"->"\\_"};
 
 mdprint[in___]:=(mywritefileend2["\n\n"<>StringJoin[StringReplace[mdstringreplace][ToString/@{in}]]])
 
