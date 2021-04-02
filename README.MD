@@ -62,5 +62,5 @@ use "shift+alt+->" to select code
 # Plan
 + √ automatic display picture
 + x support Graphics3D
-+ x Combined with vscode-matlab-interactive-terminal
++ √ Combined with code-block
 
