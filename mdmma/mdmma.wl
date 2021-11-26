@@ -1,5 +1,6 @@
 BeginPackage["mdmma`"]
 
+
 (* ::Subsection:: *)
 (* Function declaration *)
 
@@ -9,6 +10,9 @@ mdprint::usage="Output the original string at the end of the markdown file,forma
 mdshow::usage="More powerful than mdprint and supports graphics,format:mdshow[in_]";
 mdnew::usage="Create a new markdown notebook,format:mdnew[],mdnew[name_String]";
 mdtex::usage="Use MathJax to display latex expressions,format:use mdtex[] load MathJax,use mdtex[in___] show result";
+maillist::usage="maillist";
+sendtolocal::usage="send a mail to someone,format:sendtolocal[to_String,text_String,file_File]";
+mdtable::usage="greate table";
 Begin["`Private`"]
 
 (* ::Subsection:: *)
@@ -63,7 +67,7 @@ Close[outputfilestream];
 (* Mdnotebook output encapsulation *)
 
 (* markdown中的特殊字符替换 *)
-mdstringreplace={"`"->"\\`"};
+mdstringreplace={"`"->"\\`","*"->"\\*","$"->"\\$","_"->"\\_"};
 
 mdprint[in___]:=(mywritefileend2["\n\n"<>StringJoin[StringReplace[mdstringreplace][ToString/@{in}]]])
 
@@ -81,7 +85,11 @@ mdshow[in___] := (
     Switch[in,
       _Graphics, Export[FileNameJoin[{notebookfiler,"resfolder",ToString[$Line]<>"-"<>ToString[getsn[]]<>".svg"}] , in];
       mdTemplate["image"][$Line,mmashown,"svg"]//mywritefileend,
-      _Graphics3D, Export[FileNameJoin[{notebookfiler,"resfolder",ToString[$Line]<>"-"<>ToString[getsn[]]<>".png"}] , in];mdTemplate["image"][$Line,mmashown,"png"] //mywritefileend,
+      _Graph, Export[FileNameJoin[{notebookfiler,"resfolder",ToString[$Line]<>"-"<>ToString[getsn[]]<>".svg"}] , in];
+      mdTemplate["image"][$Line,mmashown,"svg"]//mywritefileend,
+      _Graphics3D, Export[FileNameJoin[{notebookfiler,"resfolder",ToString[$Line]<>"-"<>ToString[getsn[]]<>".png"}] , in];
+      mdTemplate["image"][$Line,mmashown,"png"] //mywritefileend,
+      _LibraryFunction,StringReplace[mdstringreplace][ToString[in]]//mywritefileend,
       _?(#===Null&),Null,
       _, StringReplace[mdstringreplace]@If[ByteCount[in] > 100, myshort[in], ToString@in]//mywritefileend
     ];
@@ -96,7 +104,8 @@ mdshow[in___] := (
   in
   )
 
-
+mdtable[in_List]:=mywritefileend@StringRiffle[
+ StringRiffle[ToString /@ #, {"|","|","|"}] & /@({Range[Length[in[[1]]]]}~Join~{Table[":----:",{x,in[[1]]}]}~Join~in), "\n"]
 
 (* ::Subsection:: *)
 (* File transfer tool *)
@@ -154,7 +163,8 @@ common commands:
 \tsendtolocal[to_,text_,file_]\tfile transfer
 \tmdprint[in_,in2_,...]\toutput string in mdmma
 \tmdshow[in]\tSimilar to mdprint, it supports graphics
-\tmdtex[]\tUse MathJax to display latex expressions"];
+\tmdtex[]\tUse MathJax to display latex expressions
+\tmdtable[]\tgreate table"];
 
 (* ::Subsection:: *)
 (* initialization *)

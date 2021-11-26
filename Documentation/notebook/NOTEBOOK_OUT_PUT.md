@@ -1,0 +1,3 @@
+
+
+ # NOTEBOOK OUT PUT
